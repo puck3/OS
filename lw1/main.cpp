@@ -1,6 +1,6 @@
-#include <sys/wait.h>
+#include <unistd.h>
 #include <iostream>
-#include <cstdio>
+
 using namespace std;
 
 void throw_if(int err, string what) {
@@ -15,7 +15,6 @@ int main() {
     cin >> file;
     cout << "Enter commands:" << endl;
 
-
     int pipe_fd[2];
     int err = pipe(pipe_fd);
     throw_if(err, "Pipe error");
@@ -27,6 +26,7 @@ int main() {
         close(pipe_fd[1]);
         err = dup2(pipe_fd[0], 0);
         throw_if(err, "Redirection error");
+        close(pipe_fd[0]);
 
         err = execl("child_proc", "child_proc", file.c_str(), NULL);
         throw_if(err, "Child file error");
