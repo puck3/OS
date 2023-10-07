@@ -1,26 +1,26 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include <iostream>
+#include <cstring>
 using namespace std;
 
 int main(int argc, char* argv[]) {
-
-    int fd = open(argv[1], O_CREAT | O_WRONLY, S_IRWXU);
-    if (fd == -1) {
-        cerr << "File error" << '\n';
-        return 1;
+    if (!freopen(argv[1], "w", stdout)) {
+        throw runtime_error("File error");
     }
-
-    int err = ftruncate(fd, 0);
-    if (err == -1) {
-        cerr << "File cleaning error" << '\n';
-        return 1;
+    string s;
+    while (getline(cin, s, '\n')) {
+        if (s.size()) {
+            s += " ";
+            int res{0}, pos{0};
+            for (int i{0}; i < s.size(); ++i) {
+                if (isspace(s[i]) && (i - pos)) {
+                    res += stoi(s.substr(pos, i - pos));
+                    pos = i + 1;
+                }
+            }
+            cout << res << endl;
+        }
     }
-
-    int x, res = 0;
-    while (cin >> x) {
-        res += x;
-    }
-    dprintf(fd, "%d\n", res);
-    return 0;
+    fclose(stdout);
 }

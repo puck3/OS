@@ -1,48 +1,46 @@
 #include <sys/wait.h>
 #include <iostream>
+#include <cstdio>
 using namespace std;
+
+void throw_if(int err, string what) {
+    if (err == -1) {
+        throw runtime_error(what);
+    }
+}
 
 int main() {
     string file;
     cout << "Enter file name: ";
     cin >> file;
+    cout << "Enter commands:" << endl;
+
 
     int pipe_fd[2];
     int err = pipe(pipe_fd);
-    if (err == -1) {
-        cerr << "Pipe error" << '\n';
-        return 1;
-    }
+    throw_if(err, "Pipe error");
 
     pid_t pid = fork();
-    if (pid == -1) {
-        cerr << "Child proc error" << '\n';
-        return 1;
-    }
+    throw_if(pid, "Child proc error");
 
     if (pid == 0) {
         close(pipe_fd[1]);
         err = dup2(pipe_fd[0], 0);
-        if (err == -1) {
-            cerr << "Redirection error" << '\n';
-            return 1;
-        }
+        throw_if(err, "Redirection error");
 
-        err = execl("child_proc", "child_proc", file.c_str());
-        if (err == -1) {
-            cerr << "Child file error" << '\n';
-            return 1;
-        }
+        err = execl("child_proc", "child_proc", file.c_str(), NULL);
+        throw_if(err, "Child file error");
     }
 
     if (pid > 0) {
         close(pipe_fd[0]);
-
-        int x;
-        while (cin >> x) {
-            dprintf(pipe_fd[1], "%d ", x);
+        string s;
+        while (getline(cin, s, '\n')) {
+            if (s.size()) {
+                s += '\n';
+                write(pipe_fd[1], s.c_str(), s.size() * sizeof(char));
+            }
         }
-
         close(pipe_fd[1]);
     }
 }
