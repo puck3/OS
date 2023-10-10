@@ -2,10 +2,11 @@
 #include <vector>
 #include <pthread.h>
 #include <math.h>
-#include <time.h> 
+#include <chrono>
 
 using namespace std;
 
+pthread_mutex_t mutex;
 
 typedef struct args {
     int id;
@@ -40,7 +41,6 @@ void* applyFilter(void* args) {
 
     int id = arg->id;
     const int& threadCount = arg->threadCount;
-
     const vector<vector<double>>& matrix = *arg->matrix;
     const int& sizeX = arg->sizeX;
     const int& sizeY = arg->sizeY;
@@ -76,67 +76,53 @@ void* applyFilter(void* args) {
 }
 
 int main(int argc, char* argv[]) {
+    auto begin = std::chrono::steady_clock::now();
     freopen("in.txt", "r", stdin);
-    clock_t start = clock();
-    int sizeX, sizeY;
+
+    args_t args;
+    args.threadCount = stoi(argv[1]);
+
+    pthread_t tid[args.threadCount];
     // cout << "Enter matrix size: ";
-    cin >> sizeX >> sizeY;
+    cin >> args.sizeX >> args.sizeY;
 
-    vector<vector<double>> matrix(sizeX, vector<double>(sizeY));
+    vector<vector<double>> matrix(args.sizeX, vector<double>(args.sizeY));
     // cout << "Enter matrix:" << endl;
-    scan(matrix, sizeX, sizeY);
+    scan(matrix, args.sizeX, args.sizeY);
+    args.matrix = &matrix;
 
-    int filterSizeX, filterSizeY;
     // cout << "Enter filter window size (odd number of rows and cols): ";
-    cin >> filterSizeX >> filterSizeY;
-    if (!(filterSizeX & 1) || !(filterSizeY & 1)) {
+    cin >> args.filterSizeX >> args.filterSizeY;
+    if (!(args.filterSizeX & 1) || !(args.filterSizeY & 1)) {
         throw runtime_error("Even number of rows or cols in filter window");
     }
 
-    vector<vector<double>> filter(filterSizeX, vector<double>(filterSizeY));
+    vector<vector<double>> filter(args.filterSizeX, vector<double>(args.filterSizeY));
     // cout << "Enter convolution matrix:" << endl;
-    scan(filter, filterSizeX, filterSizeY);
+    scan(filter, args.filterSizeX, args.filterSizeY);
+    args.filter = &filter;
 
     int k;
     // cout << "K = ";
     cin >> k;
-    vector<vector<double>> result(sizeX, vector<double>(sizeY, 0));
-
-    int threadCount = stoi(argv[1]);
-    pthread_t tid[threadCount];
-    args_t args[threadCount];
-    for (int i = 0; i < threadCount; ++i) {
-        args[i].id = i;
-        args[i].threadCount = threadCount;
-        args[i].result = &result;
-        args[i].matrix = &matrix;
-        args[i].sizeX = sizeX;
-        args[i].sizeY = sizeY;
-        args[i].filter = &filter;
-        args[i].filterSizeX = filterSizeX;
-        args[i].filterSizeY = filterSizeY;
-    }
-
+    vector<vector<double>> result(args.sizeX, vector<double>(args.sizeY, 0));
+    args.result = &result;
 
     for (int i = 0; i < k; ++i) {
-        for (int i = 0; i < threadCount; i++) {
-
-            pthread_create(&tid[i], NULL, applyFilter, (void*) &args[i]);
+        for (int i = 0; i < args.threadCount; i++) {
+            args.id = i;
+            pthread_create(&tid[i], NULL, applyFilter, (void*) &args);
         }
-        for (int i = 0; i < threadCount; i++) {
+        for (int i = 0; i < args.threadCount; i++) {
             pthread_join(tid[i], NULL);
         }
-        swap(matrix, result);
-        for (int i = 0; i < threadCount; ++i) {
-            args[i].result = &result;
-            args[i].matrix = &matrix;
-        }
+        args.matrix = &result;
     }
     cout.precision(6);
     cout << "Result:" << endl;
-    print(matrix, sizeX, sizeY);
-    clock_t end = clock();
-    double seconds = (double) (end - start) / CLOCKS_PER_SEC;
-    cout.precision(6);
-    cout << "took " << seconds << "s" << endl;
+    print(*args.matrix, args.sizeX, args.sizeY);
+    auto end = std::chrono::steady_clock::now();
+    auto elapsed_ms = std::chrono::duration_cast<std::chrono::milliseconds>(end - begin);
+    std::cout << "The time: " << elapsed_ms.count() << " ms\n";
+
 }
