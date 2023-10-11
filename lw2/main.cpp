@@ -78,7 +78,7 @@ void apply_to_cols(int start, int finish) {
 
 void* filter_thread(void* arg) {
     void(*apply_func)(int, int);
-    apply_func = (size_x >= size_y) ? apply_to_raws : *apply_to_cols;
+    apply_func = (size_x >= size_y) ? apply_to_raws : apply_to_cols;
     pthread_mutex_lock(&set_id_lock);
     int tid = id++;
     id %= thread_count;
