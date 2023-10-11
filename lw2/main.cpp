@@ -2,7 +2,6 @@
 #include <vector>
 #include <pthread.h>
 #include <math.h>
-#include <unordered_map>
 #include <chrono>
 
 using namespace std;
@@ -17,7 +16,6 @@ vector<vector<double>> matrix;
 vector<vector<double>> filter;
 int thread_count, id = 0, completed_count = 0;
 int size_x, size_y, filter_size_x, filter_size_y, k;
-
 
 void scan(vector<vector<double>>& m, int x, int y) {
     for (int i = 0; i < x; i++) {
@@ -74,7 +72,6 @@ void apply_to_cols(int start, int finish) {
         }
     }
 }
-
 
 void* filter_thread(void* arg) {
     void(*apply_func)(int, int);
@@ -147,6 +144,5 @@ int main(int argc, char* argv[]) {
     cout << "Result:" << endl;
     print(matrix, size_x, size_y);
     auto elapsed_ms = std::chrono::duration_cast<std::chrono::milliseconds>(end - begin);
-    std::cout << "The time: " << elapsed_ms.count() << " ms\n";
-
+    std::cout << "The time: " << elapsed_ms.count() << " ms" << endl;
 }
