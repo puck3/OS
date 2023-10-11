@@ -23,6 +23,12 @@ typedef struct {
     double div;
 } arg_t;
 
+void throw_if_empty(int& size_x, int& size_y) {
+    if (size_x == 0 || size_y == 0) {
+        throw logic_error("Matrix is empty");
+    }
+}
+
 double scan(vector<vector<double>>& matrix, int& size_x, int& size_y) {
     double sum{0};
     for (int i{0}; i < size_x; ++i) {
@@ -47,25 +53,30 @@ void print(const vector<vector<double>>& matrix, int& size_x, int& size_y) {
 void input(arg_t& args) {
     // cout << "Enter matrix size: ";
     cin >> args.size_x >> args.size_y;
+    throw_if_empty(args.size_x, args.size_y);
+
     args.matrix = args.result = vector<vector<double>>(args.size_x, vector<double>(args.size_y));
     // cout << "Enter matrix:" << endl;
     scan(args.matrix, args.size_x, args.size_y);
 
     // cout << "Enter filter window size (odd number of rows and cols): ";
     cin >> args.filter_size_x >> args.filter_size_y;
+    throw_if_empty(args.filter_size_x, args.filter_size_y);
     if (!(args.filter_size_x & 1) || !(args.filter_size_y & 1)) {
-        throw runtime_error("Even number of rows or cols in filter window");
+        throw logic_error("Even number of rows or cols in filter window");
     }
+
     args.filter = vector<vector<double>>(args.filter_size_x, vector<double>(args.filter_size_y));
     // cout << "Enter convolution matrix:" << endl;
     args.div = scan(args.filter, args.filter_size_x, args.filter_size_y);
     if (args.div < eps) args.div = 1;
+
     // cout << "K = ";
     cin >> args.k;
 }
 
 void apply_filter(int& i, int& j, arg_t* args) {
-    int& size_x{args->size_x}, & size_y{args->size_y}, & filter_size_x{args->filter_size_x}, & filter_size_y{args->filter_size_y};
+    const int& size_x{args->size_x}, & size_y{args->size_y}, & filter_size_x{args->filter_size_x}, & filter_size_y{args->filter_size_y};
 
     int half_x{filter_size_x / 2}, half_y{filter_size_y / 2};
     double sum{0};
@@ -136,11 +147,24 @@ void* filter_thread(void* arg) {
 }
 
 int main(int argc, char* argv[]) {
-    freopen("in.txt", "r", stdin);
-    arg_t args;
-    input(args);
+    if (argc == 1) {
+        cerr << "Usage: ./main_exe n" << endl;
+        cerr << "n - number of threads" << endl;
+        throw logic_error("Number of threads not specified");
+    }
 
     thread_count = stoi(argv[1]);
+    if (!thread_count) {
+        throw logic_error("At least 1 thread must exist");
+    }
+
+    arg_t args;
+    if (!freopen("in.txt", "r", stdin)) {
+        throw runtime_error("File error");
+    }
+    input(args);
+    fclose(stdin);
+
     if (args.size_x >= args.size_y && thread_count > args.size_x) {
         thread_count = args.size_x;
     } else if (args.size_x < args.size_y && thread_count > args.size_y) {
