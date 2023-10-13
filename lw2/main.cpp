@@ -8,17 +8,15 @@ using namespace std;
 
 const double eps{1e-5};
 
-pthread_mutex_t set_id_lock;
+pthread_mutex_t set_args;
 
-pthread_mutex_t completed_lock;
-pthread_cond_t completed_all;
-
-int thread_count, id{0}, completed_count{0};
+static pthread_barrier_t barrier;
 
 typedef struct {
-    vector<vector<double>> result;
-    vector<vector<double>> matrix;
-    vector<vector<double>> filter;
+    int thread_count, id;
+    vector<vector<double>>* result;
+    vector<vector<double>>* matrix;
+    vector<vector<double>>* filter;
     int size_x, size_y, filter_size_x, filter_size_y, k;
     double div;
 } arg_t;
@@ -50,58 +48,90 @@ void print(const vector<vector<double>>& matrix, int& size_x, int& size_y) {
     }
 }
 
-void input(arg_t& args) {
-    // cout << "Enter matrix size: ";
-    cin >> args.size_x >> args.size_y;
-    throw_if_empty(args.size_x, args.size_y);
+void input(arg_t args[], int argc, char* argv[], int& thread_count, int& size_x, int& size_y, int& filter_size_x, int& filter_size_y, int& div, int& k,
+    vector<vector<double>>& matrix, vector<vector<double>>& result, vector<vector<double>>& filter) {
 
-    args.matrix = args.result = vector<vector<double>>(args.size_x, vector<double>(args.size_y));
-    // cout << "Enter matrix:" << endl;
-    scan(args.matrix, args.size_x, args.size_y);
+    cout << "Enter matrix size: ";
+    cin >> size_x >> size_y;
+    throw_if_empty(size_x, size_y);
 
-    // cout << "Enter filter window size (odd number of rows and cols): ";
-    cin >> args.filter_size_x >> args.filter_size_y;
-    throw_if_empty(args.filter_size_x, args.filter_size_y);
-    if (!(args.filter_size_x & 1) || !(args.filter_size_y & 1)) {
+    matrix = result = vector<vector<double>>(size_x, vector<double>(size_y));
+    cout << "Enter matrix:" << endl;
+    scan(matrix, size_x, size_y);
+
+    cout << "Enter filter window size (odd number of rows and cols): ";
+    cin >> filter_size_x >> filter_size_y;
+    throw_if_empty(filter_size_x, filter_size_y);
+    if (!(filter_size_x & 1) || !(filter_size_y & 1)) {
         throw logic_error("Even number of rows or cols in filter window");
     }
 
-    args.filter = vector<vector<double>>(args.filter_size_x, vector<double>(args.filter_size_y));
-    // cout << "Enter convolution matrix:" << endl;
-    args.div = scan(args.filter, args.filter_size_x, args.filter_size_y);
-    if (args.div < eps) args.div = 1;
+    filter = vector<vector<double>>(filter_size_x, vector<double>(filter_size_y));
+    cout << "Enter convolution matrix:" << endl;
+    div = scan(filter, filter_size_x, filter_size_y);
+    if (div < eps) div = 1;
 
-    // cout << "K = ";
-    cin >> args.k;
+    cout << "K = ";
+    cin >> k;
+
+    if (size_x >= size_y && thread_count > size_x) {
+        thread_count = size_x;
+    } else if (size_x < size_y && thread_count > size_y) {
+        thread_count = size_y;
+    }
+
+    for (int i{0}; i < thread_count; ++i) {
+        args[i].thread_count = thread_count;
+        args[i].id = i;
+        args[i].size_x = size_x;
+        args[i].size_y = size_y;
+        args[i].matrix = &matrix;
+        args[i].filter_size_x = filter_size_x;
+        args[i].filter_size_y = filter_size_y;
+        args[i].filter = &filter;
+        args[i].result = &result;
+        args[i].div = div;
+        args[i].k = k;
+    }
 }
 
 void apply_filter(int& i, int& j, arg_t* args) {
     const int& size_x{args->size_x}, & size_y{args->size_y}, & filter_size_x{args->filter_size_x}, & filter_size_y{args->filter_size_y};
+
+    const vector<vector<double>>& matrix{*args->matrix}, & filter{*args->filter};
 
     int half_x{filter_size_x / 2}, half_y{filter_size_y / 2};
     double sum{0};
 
     for (int x{0}; x <= half_x; ++x) {
         for (int y{0}; y <= half_y; ++y) {
-            // check indexes for out of range
-            sum += args->matrix[(i - half_x + x >= 0) ? (i - half_x + x) : 0][(j - half_y + y >= 0) ? (j - half_y + y) : 0] * args->filter[x][y]; // left top corner
+            int top, bot, left, right;
+            top = (i - half_x + x >= 0) ? (i - half_x + x) : 0;
+            bot = (i + half_x - x < size_x) ? (i + half_x - x) : (size_x - 1);
+            left = (j - half_y + y >= 0) ? (j - half_y + y) : 0;
+            right = (j + half_y - y < size_y) ? (j + half_y - y) : (size_y - 1);
+
+            sum += matrix[top][left] * filter[x][y];
             if (y != half_y) {
-                sum += args->matrix[(i - half_x + x >= 0) ? (i - half_x + x) : 0][(j + half_y - y < size_y) ? (j + half_y - y) : (size_y - 1)] * args->filter[x][filter_size_y - y - 1]; // right top
+                sum += matrix[top][right] * filter[x][filter_size_y - y - 1];
             }
             if (x != half_x) {
-                sum += args->matrix[(i + half_x - x < size_x) ? (i + half_x - x) : (size_x - 1)][(j - half_y + y >= 0) ? (j - half_y + y) : 0] * args->filter[filter_size_x - x - 1][y]; // left bot
+                sum += matrix[bot][left] * filter[filter_size_x - x - 1][y];
             }
             if (x != half_x && y != half_y) {
-                sum += args->matrix[(i + half_x - x < size_x) ? (i + half_x - x) : (size_x - 1)][(j + half_y - y < size_y) ? (j + half_y - y) : (size_y - 1)] * args->filter[filter_size_x - x - 1][filter_size_y - y - 1]; // right bot
+                sum += matrix[bot][right] * filter[filter_size_x - x - 1][filter_size_y - y - 1];
             }
         }
     }
     sum / args->div;
 
-    args->result[i][j] = sum / args->div;
+    args->result->at(i)[j] = sum / args->div;
 }
 
-void apply_to_raws(int& start, int& finish, arg_t* args) {
+void apply_to_raws(arg_t* args) {
+    int start{static_cast<int>(ceil(static_cast<double>(args->size_x) / args->thread_count)) * args->id};
+    int finish{static_cast<int>(ceil(static_cast<double>(args->size_x) / args->thread_count)) * (args->id + 1)};
+
     for (int i{start}; (i < args->size_x) && (i < finish); ++i) {
         for (int j{0}; j < args->size_y; ++j) {
             apply_filter(i, j, args);
@@ -109,7 +139,10 @@ void apply_to_raws(int& start, int& finish, arg_t* args) {
     }
 }
 
-void apply_to_cols(int& start, int& finish, arg_t* args) {
+void apply_to_cols(arg_t* args) {
+    int start{static_cast<int>(ceil(static_cast<double>(args->size_x) / args->thread_count)) * args->id};
+    int finish{static_cast<int>(ceil(static_cast<double>(args->size_x) / args->thread_count)) * (args->id + 1)};
+
     for (int i{0}; i < args->size_x; i++) {
         for (int j{start}; (j < args->size_y) && (j < finish); ++j) {
             apply_filter(i, j, args);
@@ -120,33 +153,38 @@ void apply_to_cols(int& start, int& finish, arg_t* args) {
 void* filter_thread(void* arg) {
     arg_t* args{static_cast<arg_t*>(arg)};
 
-    void(*apply_func)(int&, int&, arg_t*);
+    int status;
+    void(*apply_func)(arg_t*);
     apply_func = (args->size_x >= args->size_y) ? apply_to_raws : apply_to_cols;
 
-    pthread_mutex_lock(&set_id_lock);
-    int current_id{id++};
-    id %= thread_count;
-    pthread_mutex_unlock(&set_id_lock);
-
-    int start{static_cast<int>(ceil(static_cast<double>(args->size_x) / thread_count)) * (current_id)};
-    int finish{static_cast<int>(ceil(static_cast<double>(args->size_x) / thread_count)) * (current_id + 1)};
 
     for (int _{0}; _ < args->k; ++_) {
-        apply_func(start, finish, args);
-        pthread_mutex_lock(&completed_lock);
-        if (++completed_count == thread_count) {
-            args->matrix = args->result;
-            completed_count = 0;
-            pthread_cond_broadcast(&completed_all);
-        } else {
-            pthread_cond_wait(&completed_all, &completed_lock);
+
+        /* TODO: barrier
+
+        status = pthread_barrier_init(&barrier, NULL, args->thread_count);
+        if (status != 0) {
+            throw runtime_error("Error init barrier");
         }
-        pthread_mutex_unlock(&completed_lock);
+
+        apply_func(args);
+
+        status = pthread_barrier_wait(&barrier);
+        if (!status) {
+            args->matrix = args->result;
+            pthread_barrier_destroy(&barrier);
+        } else if (status) {
+            throw runtime_error("Error wait barrier");
+        }
+        */
     }
     pthread_exit(0);
 }
 
 int main(int argc, char* argv[]) {
+    int thread_count, size_x, size_y, filter_size_x, filter_size_y, div, k;
+    vector<vector<double>> matrix, result, filter;
+
     if (argc == 1) {
         cerr << "Usage: ./main_exe n" << endl;
         cerr << "n - number of threads" << endl;
@@ -158,24 +196,20 @@ int main(int argc, char* argv[]) {
         throw logic_error("At least 1 thread must exist");
     }
 
-    arg_t args;
+    arg_t args[thread_count];
+
     if (!freopen("in.txt", "r", stdin)) {
         throw runtime_error("File error");
     }
-    input(args);
+    input(args, argc, argv, thread_count, size_x, size_y, filter_size_x, filter_size_y, div, k, matrix, result, filter);
     fclose(stdin);
-
-    if (args.size_x >= args.size_y && thread_count > args.size_x) {
-        thread_count = args.size_x;
-    } else if (args.size_x < args.size_y && thread_count > args.size_y) {
-        thread_count = args.size_y;
-    }
-    pthread_t tid[thread_count];
 
     auto begin{chrono::steady_clock::now()};
 
+    pthread_t tid[thread_count];
+
     for (int i{0}; i < thread_count; ++i) {
-        pthread_create(&tid[i], nullptr, filter_thread, static_cast<void*>(&args));
+        pthread_create(&tid[i], nullptr, filter_thread, static_cast<void*>(&args[i]));
     }
     for (int i{0}; i < thread_count; ++i) {
         pthread_join(tid[i], nullptr);
@@ -184,7 +218,7 @@ int main(int argc, char* argv[]) {
     auto end{chrono::steady_clock::now()};
 
     cout << "Result:" << endl;
-    print(args.matrix, args.size_x, args.size_y);
+    print(matrix, size_x, size_y);
 
     auto elapsed_ms{chrono::duration_cast<chrono::milliseconds>(end - begin)};
     cout << "The time: " << elapsed_ms.count() << " ms" << endl;
