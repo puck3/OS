@@ -51,15 +51,15 @@ void print(const vector<vector<double>>& matrix, int& size_x, int& size_y) {
 void input(arg_t args[], int argc, char* argv[], int& thread_count, int& size_x, int& size_y, int& filter_size_x, int& filter_size_y, int& div, int& k,
     vector<vector<double>>& matrix, vector<vector<double>>& result, vector<vector<double>>& filter) {
 
-    cout << "Enter matrix size: ";
+    // cout << "Enter matrix size: ";
     cin >> size_x >> size_y;
     throw_if_empty(size_x, size_y);
 
     matrix = result = vector<vector<double>>(size_x, vector<double>(size_y));
-    cout << "Enter matrix:" << endl;
+    // cout << "Enter matrix:" << endl;
     scan(matrix, size_x, size_y);
 
-    cout << "Enter filter window size (odd number of rows and cols): ";
+    // cout << "Enter filter window size (odd number of rows and cols): ";
     cin >> filter_size_x >> filter_size_y;
     throw_if_empty(filter_size_x, filter_size_y);
     if (!(filter_size_x & 1) || !(filter_size_y & 1)) {
@@ -67,11 +67,11 @@ void input(arg_t args[], int argc, char* argv[], int& thread_count, int& size_x,
     }
 
     filter = vector<vector<double>>(filter_size_x, vector<double>(filter_size_y));
-    cout << "Enter convolution matrix:" << endl;
+    // cout << "Enter convolution matrix:" << endl;
     div = scan(filter, filter_size_x, filter_size_y);
     if (div < eps) div = 1;
 
-    cout << "K = ";
+    // cout << "K = ";
     cin >> k;
 
     if (size_x >= size_y && thread_count > size_x) {
