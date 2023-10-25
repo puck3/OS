@@ -7,10 +7,9 @@
 using namespace std;
 
 const double eps{1e-5};
-
-pthread_mutex_t set_args;
-
-static pthread_barrier_t barrier;
+pthread_mutex_t completed_lock;
+pthread_cond_t completed_all;
+int completed_count{0};
 
 typedef struct {
     int thread_count, id;
@@ -50,7 +49,9 @@ void print(const vector<vector<double>>& matrix, int& size_x, int& size_y) {
 
 void input(arg_t args[], int argc, char* argv[], int& thread_count, int& size_x, int& size_y, int& filter_size_x, int& filter_size_y, int& div, int& k,
     vector<vector<double>>& matrix, vector<vector<double>>& result, vector<vector<double>>& filter) {
-
+    if (!freopen("in.txt", "r", stdin)) {
+        throw runtime_error("File error");
+    }
     // cout << "Enter matrix size: ";
     cin >> size_x >> size_y;
     throw_if_empty(size_x, size_y);
@@ -73,6 +74,8 @@ void input(arg_t args[], int argc, char* argv[], int& thread_count, int& size_x,
 
     // cout << "K = ";
     cin >> k;
+
+    fclose(stdin);
 
     if (size_x >= size_y && thread_count > size_x) {
         thread_count = size_x;
@@ -124,14 +127,10 @@ void apply_filter(int& i, int& j, arg_t* args) {
         }
     }
     sum / args->div;
-
     args->result->at(i)[j] = sum / args->div;
 }
 
-void apply_to_raws(arg_t* args) {
-    int start{static_cast<int>(ceil(static_cast<double>(args->size_x) / args->thread_count)) * args->id};
-    int finish{static_cast<int>(ceil(static_cast<double>(args->size_x) / args->thread_count)) * (args->id + 1)};
-
+void apply_to_raws(int start, int finish, arg_t* args) {
     for (int i{start}; (i < args->size_x) && (i < finish); ++i) {
         for (int j{0}; j < args->size_y; ++j) {
             apply_filter(i, j, args);
@@ -139,10 +138,7 @@ void apply_to_raws(arg_t* args) {
     }
 }
 
-void apply_to_cols(arg_t* args) {
-    int start{static_cast<int>(ceil(static_cast<double>(args->size_x) / args->thread_count)) * args->id};
-    int finish{static_cast<int>(ceil(static_cast<double>(args->size_x) / args->thread_count)) * (args->id + 1)};
-
+void apply_to_cols(int start, int finish, arg_t* args) {
     for (int i{0}; i < args->size_x; i++) {
         for (int j{start}; (j < args->size_y) && (j < finish); ++j) {
             apply_filter(i, j, args);
@@ -152,31 +148,24 @@ void apply_to_cols(arg_t* args) {
 
 void* filter_thread(void* arg) {
     arg_t* args{static_cast<arg_t*>(arg)};
-
-    int status;
-    void(*apply_func)(arg_t*);
+    void(*apply_func)(int, int, arg_t*);
     apply_func = (args->size_x >= args->size_y) ? apply_to_raws : apply_to_cols;
 
+    int start{static_cast<int>(ceil(static_cast<double>(args->size_x) / args->thread_count)) * args->id};
+    int finish{static_cast<int>(ceil(static_cast<double>(args->size_x) / args->thread_count)) * (args->id + 1)};
+    int status;
 
     for (int _{0}; _ < args->k; ++_) {
-
-        /* TODO: barrier
-
-        status = pthread_barrier_init(&barrier, NULL, args->thread_count);
-        if (status != 0) {
-            throw runtime_error("Error init barrier");
+        apply_func(start, finish, args);
+        pthread_mutex_lock(&completed_lock);
+        if (++completed_count == args->thread_count) {
+            completed_count = 0;
+            pthread_cond_broadcast(&completed_all);
+        } else {
+            pthread_cond_wait(&completed_all, &completed_lock);
         }
-
-        apply_func(args);
-
-        status = pthread_barrier_wait(&barrier);
-        if (!status) {
-            args->matrix = args->result;
-            pthread_barrier_destroy(&barrier);
-        } else if (status) {
-            throw runtime_error("Error wait barrier");
-        }
-        */
+        pthread_mutex_unlock(&completed_lock);
+        args->matrix = args->result;
     }
     pthread_exit(0);
 }
@@ -197,29 +186,20 @@ int main(int argc, char* argv[]) {
     }
 
     arg_t args[thread_count];
-
-    if (!freopen("in.txt", "r", stdin)) {
-        throw runtime_error("File error");
-    }
     input(args, argc, argv, thread_count, size_x, size_y, filter_size_x, filter_size_y, div, k, matrix, result, filter);
-    fclose(stdin);
 
     auto begin{chrono::steady_clock::now()};
-
     pthread_t tid[thread_count];
-
     for (int i{0}; i < thread_count; ++i) {
         pthread_create(&tid[i], nullptr, filter_thread, static_cast<void*>(&args[i]));
     }
     for (int i{0}; i < thread_count; ++i) {
         pthread_join(tid[i], nullptr);
     }
-
     auto end{chrono::steady_clock::now()};
 
-    cout << "Result:" << endl;
-    print(matrix, size_x, size_y);
-
+    // cout << "Result:" << endl;
+    // print(*args[0].matrix, size_x, size_y);
     auto elapsed_ms{chrono::duration_cast<chrono::milliseconds>(end - begin)};
     cout << "The time: " << elapsed_ms.count() << " ms" << endl;
 }
