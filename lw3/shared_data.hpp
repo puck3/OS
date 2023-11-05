@@ -11,7 +11,6 @@ void throw_if(int err, string what) {
 }
 
 struct SharedData {
-public:
     bool end = false;
     char data[16];
     sem_t sem1;
