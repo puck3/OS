@@ -2,11 +2,12 @@
 #include <string>
 #include <semaphore.h>
 
+
 const char* shm_name = "/my_shared_memory";
 
-void throw_if(int err, string what) {
+void throw_if(int err, std::string what) {
     if (err == -1) {
-        throw runtime_error(what);
+        throw std::runtime_error(what);
     }
 }
 
