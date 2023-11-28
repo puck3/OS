@@ -201,5 +201,5 @@ int main(int argc, char* argv[]) {
     // cout << "Result:" << endl;
     // print(*args[0].matrix, size_x, size_y);
     auto elapsed_ms{chrono::duration_cast<chrono::milliseconds>(end - begin)};
-    cout << "The time: " << elapsed_ms.count() << " ms" << endl;
+    cout << elapsed_ms.count() << endl;
 }

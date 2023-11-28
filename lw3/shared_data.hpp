@@ -16,5 +16,4 @@ struct SharedData {
     char data[16];
     sem_t sem1;
     sem_t sem2;
-    sem_t sem3;
 };

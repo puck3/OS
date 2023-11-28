@@ -31,9 +31,6 @@ int main() {
     err = sem_init(&data->sem2, 1, 0);
     throw_if(err, "semaphore init error");
 
-    err = sem_init(&data->sem3, 1, 0);
-    throw_if(err, "semaphore init error");
-
     pid_t pid = fork();
     throw_if(pid, "fork failed");
     if (pid == 0) {
@@ -64,7 +61,6 @@ int main() {
     }
     sem_destroy(&data->sem1);
     sem_destroy(&data->sem2);
-    sem_destroy(&data->sem3);
 
     munmap(data, sizeof(SharedData));
     shm_unlink(shm_name);

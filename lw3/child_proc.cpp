@@ -44,6 +44,7 @@ int main(int argc, char* argv[]) {
     }
 
     munmap(data, sizeof(SharedData));
+    shm_unlink(shm_name);
     fclose(stdout);
     return 0;
 }
