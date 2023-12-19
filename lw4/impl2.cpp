@@ -1,4 +1,5 @@
 #include "functions.hpp"
+#include "iostream"
 #include <cmath>
 
 std::pair<int, int> partition(int* a, int begin, int end, int pivot) {
@@ -30,6 +31,8 @@ void qsort(int* a, int begin, int end) {
 
 
 double E(int x) {
+    std::cout << "Impl 2" << std::endl;
+
     long long fact = 1;
     double sum{1};
     for (int i{1}; i < x; ++i) {

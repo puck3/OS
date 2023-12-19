@@ -1,7 +1,9 @@
 #include "functions.hpp"
+#include <iostream>
 #include <cmath>
 
 double E(int x) {
+    std::cout << "Impl 1" << std::endl;
     return pow((1 + 1 / static_cast<double>(x)), x);
 }
 

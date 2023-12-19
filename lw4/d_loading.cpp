@@ -33,16 +33,12 @@ int main() {
     while (std::cin >> n) {
         if (n == 0) {
             dlclose(libraryHandle);
-            switch (current_impl) {
-                case 1:
-                    load_lib("libimpl2.so");
-                    current_impl = 2;
-                    break;
-
-                default:
-                    load_lib("libimpl1.so");
-                    current_impl = 1;
-                    break;
+            if (current_impl == 1) {
+                load_lib("libimpl2.so");
+                current_impl = 2;
+            } else {
+                load_lib("libimpl1.so");
+                current_impl = 1;
             }
 
         } else if (n == 1) {
