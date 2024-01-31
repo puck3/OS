@@ -45,6 +45,8 @@ void* create(void* args) {
         pthread_mutex_lock(&child_nodes_mutex.back());
 
         mq.add_child(node_id);
+        std::string msg = std::to_string(node_id) + " pid";
+        mq.send(node_id, msg);
         std::string rep = mq.receive(node_id);
         std::cout << rep << std::endl;
         children.insert(node_id, parent_id);
@@ -172,7 +174,7 @@ int main() {
             args.key = key;
 
             pthread_t thread;
-            pthread_create(&thread, nullptr, create, static_cast<void*>(&args));
+            pthread_create(&thread, nullptr, exec, static_cast<void*>(&args));
             pthread_detach(thread);
         } else if (operation == "print") {
             std::cout << -1 << std::endl << children;

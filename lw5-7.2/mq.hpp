@@ -14,7 +14,7 @@ private:
 
 public:
     MQ(int id) : _id(id) {
-        _parent = zmq::socket_t{_context, ZMQ_REQ};
+        _parent = zmq::socket_t{_context, ZMQ_REP};
         if (id != -1) {
             std::string address = "tcp://127.0.0.1:" + std::to_string(MAIN_PORT + id);
             _parent.bind(address);
@@ -31,8 +31,9 @@ public:
     }
 
     void add_child(int id) {
+
         if (_id == -1 || _children.empty()) {
-            _children[id] = zmq::socket_t{_context, ZMQ_REP};
+            _children[id] = zmq::socket_t{_context, ZMQ_REQ};
             std::string address = "tcp://127.0.0.1:" + std::to_string(MAIN_PORT + id);
             _children[id].connect(address);
             _children[id].set(zmq::sockopt::rcvtimeo, 3000);

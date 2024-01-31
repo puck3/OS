@@ -21,6 +21,8 @@ void create(std::istringstream& is, MQ& mq, int& child_id) {
     }
     child_id = new_child_id;
     mq.add_child(child_id);
+    std::string msg = std::to_string(child_id) + " pid";
+    mq.send(child_id, msg);
     std::string ans = mq.receive(child_id);
     mq.send(ans);
 }
@@ -64,9 +66,6 @@ int main(int argc, char* argv[]) {
         mq.add_child(child_id);
     }
 
-    std::string init_msg = "OK: " + std::to_string(getpid());
-    mq.send(init_msg);
-
     std::map<std::string, std::string> dictionary;
 
     while (true) {
@@ -78,7 +77,10 @@ int main(int argc, char* argv[]) {
 
         std::string cmd;
         is >> cmd;
-
+        if (cmd == "pid") {
+            std::string init_msg = "OK: " + std::to_string(getpid());
+            mq.send(init_msg);
+        }
         if (cmd == "heartbeat") {
             int time;
             is >> time;
