@@ -2,7 +2,7 @@
 #include <stdexcept>
 #include <iostream>
 
-class topology {
+class Topology {
 private:
     std::list<std::list<int>> container;
 
@@ -14,7 +14,7 @@ public:
             new_list.push_back(id);
             container.push_back(new_list);
         } else {
-            int list_id = find(parent_id);
+            int list_id = find_list(parent_id);
             if (list_id == -1) {
                 throw std::runtime_error("Wrong parent id");
             }
@@ -29,7 +29,7 @@ public:
         }
     }
 
-    int find(int id) {
+    int find_list(int id) {
         int cur_list_id = 0;
         for (auto it1 = container.begin(); it1 != container.end(); ++it1) {
             for (auto it2 = it1->begin(); it2 != it1->end(); ++it2) {
@@ -61,8 +61,8 @@ public:
         return res;
     }
 
-    friend std::ostream& operator<<(std::ostream& os, const topology& topology) {
-        for (auto& node_list : topology.container) {
+    friend std::ostream& operator<<(std::ostream& os, const Topology& Topology) {
+        for (auto& node_list : Topology.container) {
             os << "{ ";
             for (auto& node : node_list) {
                 os << node << " ";

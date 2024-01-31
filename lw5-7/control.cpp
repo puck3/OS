@@ -5,142 +5,235 @@
 #include "mq.hpp"
 #include "topology.hpp"
 
-// broken
-void create(Topology& node_lists, std::vector<zmq::socket_t>& children, zmq::context_t& context) {
-    int node_id, parent_id;
-    std::cin >> node_id >> parent_id;
+class ControlNode {
+private:
+    topology children;
+    std::vector<zmq::socket_t> child_sockets;
+    std::vector<zmq::socket_t> child_ping_sockets;
 
-    node_lists.throw_if_new_node_invalid(node_id, parent_id);
-
-    std::string reply;
-    if (parent_id == -1) {
-        pid_t pid = fork();
-        if (pid < 0) throw std::runtime_error("Can't create new process");
-
-        if (pid == 0) {
-            int err = execl("./calculation", "./calculation", std::to_string(node_id).c_str(), NULL);
-            if (err == -1) throw std::runtime_error("Can't execute new process");
-        }
-
-        children.emplace_back(context, ZMQ_REQ);
-        children[children.size() - 1].setsockopt(ZMQ_RCVTIMEO, 5000);
-        bind(children[children.size() - 1], node_id);
-        send_message(children[children.size() - 1], std::to_string(node_id) + " pid");
-
-        reply = receive_message(children[children.size() - 1]);
-    } else {
-        int list_idx = node_lists.find(parent_id);
-        send_message(children[list_idx], std::to_string(parent_id) + " create " + std::to_string(node_id));
-
-        reply = receive_message(children[list_idx]);
-    }
-
-    node_lists.insert(node_id, parent_id);
-    std::cout << reply << std::endl;
-}
-
-void exec(Topology& node_lists, std::vector<zmq::socket_t>& children) {
-    int dest_id{}, value{};
-    std::string key;
-    std::cin >> dest_id >> key;
-    if (std::cin.peek() != '\n') {
-        std::cin >> value;
-    }
-
-    int list_idx = node_lists.find(dest_id);
-    if (list_idx == -1) {
-        throw std::runtime_error("Invalid node id");
-    }
-
-    if (value)
-        send_message(children[list_idx], std::to_string(dest_id) + " set " + key + " " + std::to_string(value));
-    else
-        send_message(children[list_idx], std::to_string(dest_id) + " get " + key);
-
-    std::string reply = receive_message(children[list_idx]);
-    std::cout << reply << std::endl;
-}
-
-// broken
-void kill(Topology& node_lists, std::vector<zmq::socket_t>& children) {
-    int id;
-    std::cin >> id;
-    int list_idx = node_lists.find(id);
-    if (list_idx == -1) {
-        throw std::runtime_error("Invalid node id");
-    }
-    bool is_first = (node_lists.get_first_id(list_idx) == id);
-    send_message(children[list_idx], std::to_string(id) + " kill");
-
-    std::string reply = receive_message(children[list_idx]);
-    std::cout << reply << std::endl;
-    node_lists.erase(id);
-    if (is_first) {
-        unbind(children[list_idx], id);
-        children.erase(children.begin() + list_idx);
-    }
-}
-
-void print(Topology& node_lists) {
-    std::cout << node_lists;
-}
-
-void ping(Topology& node_lists, std::vector<zmq::socket_t>& children) {
-    int id;
-    std::cin >> id;
-    int list_idx = node_lists.find(id);
-    if (list_idx == -1) {
-        throw std::runtime_error("Not found");
-    }
-    send_message(children[list_idx], std::to_string(id) + " ping");
-    std::string reply;
-    try {
-        reply = receive_message(children[list_idx]);
-    }
-    catch (...) {
-        reply = "OK: 0";
-    }
-    std::cout << reply << std::endl;
-}
-
-void Exit(Topology& node_lists, std::vector<zmq::socket_t>& children) {
-    for (size_t i = 0; i < children.size(); ++i) {
-        int first_node_id = node_lists.get_first_id(i);
-        send_message(children[i], std::to_string(first_node_id) + " kill");
-        std::string reply = receive_message(children[i]);
-        unbind(children[i], first_node_id);
-    }
-    exit(0);
-}
-
-int main() {
-    Topology node_lists;
-    std::vector<zmq::socket_t> children;
     zmq::context_t context;
 
-    std::string action;
-    std::cout << ">";
-    while (std::cin >> action) {
-        try {
-            if (action == "create") {
-                create(node_lists, children, context);
-            } else if (action == "exec") {
-                exec(node_lists, children);
-            } else if (action == "kill") {
-                kill(node_lists, children);
-            } else if (action == "print") {
-                print(node_lists);
-            } else if (action == "ping") {
-                ping(node_lists, children);
-            } else if (action == "exit") {
-                Exit(node_lists, children);
+    // pthread_mutex_t mutex;
+
+    int heartbeat_time;
+    bool is_heartbeat;
+    bool is_exit;
+
+public:
+    ControlNode() : heartbeat_time(1000), is_heartbeat(false), is_exit(false) {};
+
+    ~ControlNode() {
+        for (size_t i = 0; i < child_sockets.size(); ++i) {
+            int first_node_id = children.get_first_id(i);
+            unbind(child_sockets[i], first_node_id * 2);
+            unbind(child_ping_sockets[i], first_node_id * 2 + 1);
+        }
+    }
+
+    void m_lock() {
+        // pthread_mutex_lock(&mutex);
+    }
+
+    void m_unlock() {
+        // pthread_mutex_unlock(&mutex);
+    }
+
+    void create() {
+        int node_id, parent_id;
+        std::cin >> node_id >> parent_id;
+
+        if (children.find(node_id) != -1 || node_id == -1) {
+            std::cout << "Error: already exists" << std::endl;
+        } else if (parent_id == -1) {
+            pid_t pid = fork();
+            if (pid < 0) {
+                perror("Error: Can't create new process");
+                std::exit(-1);
+            }
+            if (pid == 0) {
+                execl("./calculation", "./calculation", std::to_string(node_id).c_str(), NULL);
+                perror("Error: Can't execute new process");
+                std::exit(-2);
+            }
+
+            // pthread_mutex_lock(&mutex);
+            child_sockets.emplace_back(context, ZMQ_REQ);
+            child_sockets[child_sockets.size() - 1].set(zmq::sockopt::rcvtimeo, 3000);
+            try {
+                bind(child_sockets[child_sockets.size() - 1], node_id * 2);
+            }
+            catch (zmq::error_t& e) {
+                // pthread_mutex_unlock(&mutex);
+                std::cout << "Error: Address already in use" << std::endl;
+                return;
+            }
+
+            child_ping_sockets.emplace_back(context, ZMQ_REQ);
+            child_ping_sockets[child_ping_sockets.size() - 1].set(zmq::sockopt::rcvtimeo, heartbeat_time);
+            try {
+                bind(child_ping_sockets[child_ping_sockets.size() - 1], node_id * 2 + 1);
+            }
+            catch (zmq::error_t& e) {
+                // pthread_mutex_unlock(&mutex);
+                std::cout << "Error: Address already in use" << std::endl;
+                return;
+            }
+
+            send_message(child_sockets[child_sockets.size() - 1], std::to_string(node_id) + "pid");
+            // pthread_mutex_unlock(&mutex);
+
+            children.insert(node_id, parent_id);
+        }
+    }
+
+    void exec() {
+        int dest_id, value;
+        std::string key;
+        std::cin >> dest_id >> key;
+        if (ping(dest_id, 1000)) {
+            // pthread_mutex_lock(&mutex);
+            int list_num = children.find(dest_id);
+            // pthread_mutex_unlock(&mutex);
+            if (std::cin.peek() != '\n') {
+                std::cin >> value;
+                send_message(child_sockets[list_num], std::to_string(dest_id) + " set " + key + " " + std::to_string(value));
             } else {
-                throw std::runtime_error("Incorrect action");
+                send_message(child_sockets[list_num], std::to_string(dest_id) + " get " + key);
+            }
+        } else {
+            std::cout << "Error: node is unavailable" << std::endl;
+        }
+    }
+
+    void print() {
+        std::cout << -1 << std::endl << children;
+    }
+
+    bool check_heartbeat() const {
+        return is_heartbeat;
+    }
+
+    void set_heartbeat(bool value) {
+        is_heartbeat = value;
+    }
+
+    void set_heartbeat_time(int value) {
+        heartbeat_time = value;
+    }
+
+    int get_heartbeat_time() const {
+        return heartbeat_time;
+    }
+
+    bool ping(int id, int time) {
+        int timeout = 4 * time;
+        // pthread_mutex_lock(&mutex);
+        int list_num = children.find(id);
+        if (list_num == -1) {
+            std::cout << "Error: incorrect node id" << std::endl;
+            return false;
+        }
+        child_ping_sockets[list_num].set(zmq::sockopt::rcvtimeo, timeout);
+        // pthread_mutex_unlock(&mutex);
+
+        send_message(child_sockets[list_num], std::to_string(id) + " ping");
+        std::string reply = receive_message(child_ping_sockets[list_num]);
+        std::istringstream is(reply);
+        std::string err;
+        is >> err;
+        if (err == "Error:") {
+            return false;
+        }
+        return true;
+    }
+
+    void exit() {
+        is_exit = true;
+    }
+
+    friend void* printFunction(void*);
+    friend void* heartbeatFunction(void*);
+
+
+};
+
+
+void* heartbeatFunction(void* arg) {
+    auto control_node = (ControlNode*) arg;
+    while (control_node->check_heartbeat()) {
+        // pthread_mutex_lock(&(control_node->mutex));
+        std::list<int> tmp = control_node->children.get_nodes();
+        control_node->m_unlock();
+        bool answer = true;
+        for (int& node : tmp) {
+            if (!(control_node->ping(node, control_node->get_heartbeat_time()))) {
+                answer = false;
+                std::cout << "Heartbeat: node " << node << " is unavailable now" << std::endl;
             }
         }
-        catch (std::exception& e) {
-            std::cerr << "ERROR: " << e.what() << std::endl;
+        if (answer) {
+            std::cout << "OK" << std::endl;
         }
-        std::cout << ">";
     }
+    return nullptr;
+}
+
+void heartbeat(ControlNode& node, pthread_t& heartbeatThread) {
+    if (!node.check_heartbeat()) {
+        int time;
+        std::cin >> time;
+        node.set_heartbeat_time(time);
+        node.set_heartbeat(true);
+        pthread_create(&heartbeatThread, nullptr, heartbeatFunction, static_cast<void*>(&node));
+
+    } else {
+        node.set_heartbeat(false);
+        pthread_detach(heartbeatThread);
+
+    }
+}
+
+void* printFunction(void* arg) {
+    auto control_node = static_cast<ControlNode*>(arg);
+    while (!control_node->is_exit) {
+        for (size_t i = 0; i < control_node->child_sockets.size(); ++i) {
+            zmq::pollitem_t items[] = {{control_node->child_sockets[i], 0, ZMQ_POLLIN, 0}};
+            int rc = zmq_poll(items, 1, ZMQ_RCVTIMEO);
+            if (rc > 0) {
+                std::string reply = receive_message(control_node->child_sockets[i]);
+                std::cout << reply << std::endl;
+            }
+        }
+    }
+    return nullptr;
+}
+
+
+int main() {
+    ControlNode node;
+    pthread_t printThread;
+    pthread_t heartbeatThread;
+
+
+    pthread_create(&printThread, nullptr, printFunction, static_cast<void*>(&node));
+
+    std::string operation;
+    while (std::cin >> operation) {
+        if (operation == "create") {
+            node.create();
+        } else if (operation == "exec") {
+            node.exec();
+        } else if (operation == "print") {
+            node.print();
+        } else if (operation == "heartbeat") {
+            heartbeat(node, heartbeatThread);
+        } else if (operation == "exit" || operation == "q" || operation == "quit") {
+            node.exit();
+            break;
+        } else {
+            std::cout << "Incorrect operation" << std::endl;
+        }
+    }
+
+    pthread_detach(printThread);
 }
