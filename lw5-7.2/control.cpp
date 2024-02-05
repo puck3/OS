@@ -4,9 +4,6 @@
 #include "mq.hpp"
 #include "topology.hpp"
 
-// 1 thread for all or different threads for different operations
-
-// mutex for every child !!!
 MQ mq{-1};
 
 pthread_mutex_t control_node_mutex = PTHREAD_MUTEX_INITIALIZER;
@@ -45,21 +42,21 @@ void* create(void* args) {
         pthread_mutex_lock(&child_nodes_mutex.back());
 
         mq.add_child(node_id);
+        children.insert(node_id, parent_id);
+
         std::string msg = std::to_string(node_id) + " pid";
         mq.send(node_id, msg);
         std::string rep = mq.receive(node_id);
         std::cout << rep << std::endl;
-        children.insert(node_id, parent_id);
 
         pthread_mutex_unlock(&child_nodes_mutex.back());
-
     }
 
     else {
         int list_id = children.find_list(parent_id);
         pthread_mutex_lock(&child_nodes_mutex[list_id]);
 
-        std::string msg = std::to_string(parent_id) + " create" + std::to_string(node_id);
+        std::string msg = std::to_string(parent_id) + " create " + std::to_string(node_id);
         int id = children.get_first_id(list_id);
         mq.send(id, msg);
 
@@ -104,13 +101,13 @@ void set_heartbeat(int time = 0) {
     pthread_mutex_lock(&heartbeat_lock);
     heartbeat_time = time;
     heartbeat_status = time ? true : false;
-    pthread_cond_signal(&status_cond);
+    pthread_cond_broadcast(&status_cond);
     pthread_mutex_unlock(&heartbeat_lock);
 }
 
 void* Heartbeat(void* args) {
     while (true) {
-        while (!heartbeat_status || !heartbeat_time) {
+        while (!heartbeat_status) {
             pthread_mutex_lock(&heartbeat_lock);
             mq.set_rcvtimeo(3000);
             pthread_cond_wait(&status_cond, &heartbeat_lock);
@@ -129,11 +126,14 @@ void* Heartbeat(void* args) {
             mq.send(id, msg);
             std::string ans = mq.receive(id);
             pthread_mutex_unlock(&child_nodes_mutex[list_id]);
-            // if (!(control_node->ping(node, control_node->get_heartbeat_time()))) {
-            //     answer = false;
-            //     std::cout << "Heartbeat: node " << node << " is unavailable now" << std::endl;
-            // }
-            std::cout << "Heartbeat: " << ans << std::endl;
+            std::istringstream is{ans};
+            std::string status;
+            is >> status;
+            if (status == "Error:") {
+                answer = false;
+                std::cout << "Heartbeat: " << node << " Node is unavailable now" << std::endl;
+            }
+            // std::cout << "Heartbeat: " << ans << std::endl;
         }
         if (answer) {
             std::cout << "OK" << std::endl;
@@ -187,6 +187,7 @@ int main() {
                 set_heartbeat();
             }
         } else if (operation == "exit" || operation == "q" || operation == "quit") {
+            std::cout << "Exit..." << std::endl;
             pthread_cancel(heartbeat_thread);
             pthread_join(heartbeat_thread, nullptr);
             break;
