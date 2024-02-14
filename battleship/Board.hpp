@@ -1,5 +1,7 @@
 #include <vector>
 #include <iostream>
+#include <unistd.h> 
+
 
 const int SIZE = 10;
 
@@ -10,19 +12,13 @@ typedef enum {
     miss,
 } cell_t;
 
-typedef enum {
-    not_ready = 0,
-    ready,
-    in_game,
-} state_t;
-
 class Board {
 private:
-    state_t state;
     std::vector<std::vector<cell_t>> main_board;
     std::vector<std::vector<cell_t>> hit_board;
     int points;
 
+public:
     void throw_if_invalid_cell(int x, int y) const {
         if (x < 0 || x >= SIZE || y < 0 || y >= SIZE) {
             throw std::runtime_error("Cell must be on the board!");
@@ -49,35 +45,40 @@ private:
         }
     }
 
-    void add_ship(int length, std::ostream& os, std::istream& is) noexcept {
+    void add_ship(int length) noexcept {
         int x1, x2, y1, y2;
-        os << "Enter the coordinates of the " << length << "-decker ship ";
-        if (length == 1) {
-            os << "(format: A0): " << std::endl;
-            std::string pos;
-            is >> pos;
-            y1 = y2 = static_cast<int>(pos[0] - 'A');
-            x1 = x2 = static_cast<int>(pos[1] - '0');
-        } else {
-            os << "(format: A0 A0): " << std::endl;
-            std::string pos1, pos2;
-            is >> pos1 >> pos2;
-            y1 = static_cast<int>(pos1[0] - 'A'); x1 = static_cast<int>(pos1[1] - '0');
-            y2 = static_cast<int>(pos2[0] - 'A'); x2 = static_cast<int>(pos2[1] - '0');
-        }
-        if (x1 > x2) std::swap(x1, x2);
-        if (y1 > y2) std::swap(y1, y2);
-        try {
-            throw_if_invalid_ship(length, x1, y1, x2, y2);
+        while (true) {
+            std::cout << "Enter the coordinates of the " << length << "-decker ship ";
+            if (length == 1) {
+                std::cout << "(format: A0): " << std::endl;
+                std::string pos;
+                std::cin >> pos;
+                y1 = y2 = static_cast<int>(toupper(pos[0]) - 'A');
+                x1 = x2 = static_cast<int>(pos[1] - '0');
+            } else {
+                std::cout << "(format: A0 A0): " << std::endl;
+                std::string pos1, pos2;
+                std::cin >> pos1 >> pos2;
+                y1 = static_cast<int>(toupper(pos1[0]) - 'A'); x1 = static_cast<int>(pos1[1] - '0');
+                y2 = static_cast<int>(toupper(pos2[0]) - 'A'); x2 = static_cast<int>(pos2[1] - '0');
+                if (x1 > x2) std::swap(x1, x2);
+                if (y1 > y2) std::swap(y1, y2);
+            }
+
+            try {
+                throw_if_invalid_ship(length, x1, y1, x2, y2);
+            }
+            catch (std::exception& e) {
+                std::cout << e.what() << " Try again." << std::endl;
+                continue;
+            }
+
             for (int i{y1}; i <= y2; ++i) {
                 for (int j{x1}; j <= x2; ++j) {
                     main_board[i][j] = ship;
                 }
             }
-        }
-        catch (std::exception& e) {
-            os << e.what() << " Try again." << std::endl;
-            add_ship(length, os, is);
+            break;
         }
     }
 
@@ -86,69 +87,49 @@ private:
     }
 
     void set_hit(int x, int y, cell_t cell) noexcept {
-        if (!hit_board[y][x]) {
+        if (hit_board[y][x] != hit && hit_board[y][x] != miss) {
             hit_board[y][x] = cell;
+            if (cell == hit) {
+                ++points;
+            }
         }
     }
 
     void set_main(int x, int y, cell_t cell) noexcept {
-        if (!main_board[y][x]) {
+        if (main_board[y][x] != hit && main_board[y][x] != miss) {
             main_board[y][x] = cell;
         }
     }
 
-public:
     Board() :
-        state(not_ready),
         main_board(std::vector<std::vector<cell_t>>(SIZE, std::vector<cell_t>(SIZE, empty))),
         hit_board(std::vector<std::vector<cell_t>>(SIZE, std::vector<cell_t>(SIZE, empty))),
         points(0) {}
 
     virtual ~Board() = default;
 
-    int get_points() const noexcept {
-        return points;
+    bool check_win() const noexcept {
+        return points == 20;
     }
 
-    state_t get_state() const noexcept {
-        return state;
-    }
-
-    void set_state(state_t state) {
-        this->state = state;
-    }
-
-    void set_ships(std::ostream& os, std::istream& is) noexcept {
-        print(os);
+    void set_ships() noexcept {
+        print(std::cout);
         for (int i{0}; i < 4; ++i) {
             for (int j{0}; j <= i; ++j) {
-                add_ship(4 - i, os, is);
-                print(os);
+                add_ship(4 - i);
+                print(std::cout);
             }
         }
     }
 
-    void attack(std::ostream& os, std::istream& is, Board& other) noexcept {
-        os << "Enter the coordinates of cell to attack (format: A0):" << std::endl;
-        std::string pos;
-        is >> pos;
-        int y = static_cast<int>(pos[0] - 'A'), x = static_cast<int>(pos[1] - '0');
-        try {
-            throw_if_invalid_cell(x, y);
-            if (other.success(x, y)) {
-                set_hit(x, y, hit);
-                other.set_main(x, y, hit);
-                ++points;
-            } else {
-                set_hit(x, y, miss);
-                other.set_main(x, y, miss);
+    void clear() {
+        points = 0;
+        for (int i{0}; i < SIZE; ++i) {
+            for (int j{0}; j < SIZE; ++j) {
+                main_board[i][j] = empty;
+                hit_board[i][j] = empty;
             }
         }
-        catch (std::exception& e) {
-            os << e.what() << " Try again." << std::endl;
-            attack(os, is, other);
-        }
-
     }
 
     void print(std::ostream& os) const noexcept {
