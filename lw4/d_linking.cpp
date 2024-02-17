@@ -2,6 +2,7 @@
 #include "functions.hpp"
 
 int main() {
+    freopen("in", "r", stdin);
     int n;
     while (std::cin >> n) {
         if (n == 1) {

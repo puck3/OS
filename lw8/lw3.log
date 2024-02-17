@@ -1,0 +1,168 @@
+20831 execve("./lw3_exe", ["./lw3_exe"], 0x7ffd04511b90 /* 58 vars */) = 0
+20831 brk(NULL)                         = 0x634c9ff3d000
+20831 access("/etc/ld.so.preload", R_OK) = -1 ENOENT (Нет такого файла или каталога)
+20831 openat(AT_FDCWD, "/etc/ld.so.cache", O_RDONLY|O_CLOEXEC) = 3
+20831 fstat(3, {st_mode=S_IFREG|0644, st_size=110395, ...}) = 0
+20831 mmap(NULL, 110395, PROT_READ, MAP_PRIVATE, 3, 0) = 0x7e19f0392000
+20831 close(3)                          = 0
+20831 openat(AT_FDCWD, "/usr/lib/libstdc++.so.6", O_RDONLY|O_CLOEXEC) = 3
+20831 read(3, "\177ELF\2\1\1\3\0\0\0\0\0\0\0\0\3\0>\0\1\0\0\0\0\0\0\0\0\0\0\0"..., 832) = 832
+20831 fstat(3, {st_mode=S_IFREG|0755, st_size=21512744, ...}) = 0
+20831 mmap(NULL, 8192, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0x7e19f0390000
+20831 mmap(NULL, 2597056, PROT_READ, MAP_PRIVATE|MAP_DENYWRITE, 3, 0) = 0x7e19f0000000
+20831 mmap(0x7e19f009c000, 1273856, PROT_READ|PROT_EXEC, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3, 0x9c000) = 0x7e19f009c000
+20831 mmap(0x7e19f01d3000, 614400, PROT_READ, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3, 0x1d3000) = 0x7e19f01d3000
+20831 mmap(0x7e19f0269000, 57344, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3, 0x269000) = 0x7e19f0269000
+20831 mmap(0x7e19f0277000, 12480, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED|MAP_ANONYMOUS, -1, 0) = 0x7e19f0277000
+20831 close(3)                          = 0
+20831 openat(AT_FDCWD, "/usr/lib/libm.so.6", O_RDONLY|O_CLOEXEC) = 3
+20831 read(3, "\177ELF\2\1\1\3\0\0\0\0\0\0\0\0\3\0>\0\1\0\0\0\0\0\0\0\0\0\0\0"..., 832) = 832
+20831 fstat(3, {st_mode=S_IFREG|0755, st_size=960856, ...}) = 0
+20831 mmap(NULL, 962856, PROT_READ, MAP_PRIVATE|MAP_DENYWRITE, 3, 0) = 0x7e19f02a4000
+20831 mmap(0x7e19f02b2000, 524288, PROT_READ|PROT_EXEC, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3, 0xe000) = 0x7e19f02b2000
+20831 mmap(0x7e19f0332000, 376832, PROT_READ, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3, 0x8e000) = 0x7e19f0332000
+20831 mmap(0x7e19f038e000, 8192, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3, 0xe9000) = 0x7e19f038e000
+20831 close(3)                          = 0
+20831 openat(AT_FDCWD, "/usr/lib/libgcc_s.so.1", O_RDONLY|O_CLOEXEC) = 3
+20831 read(3, "\177ELF\2\1\1\0\0\0\0\0\0\0\0\0\3\0>\0\1\0\0\0\0\0\0\0\0\0\0\0"..., 832) = 832
+20831 fstat(3, {st_mode=S_IFREG|0644, st_size=728120, ...}) = 0
+20831 mmap(NULL, 147912, PROT_READ, MAP_PRIVATE|MAP_DENYWRITE, 3, 0) = 0x7e19f027f000
+20831 mmap(0x7e19f0283000, 110592, PROT_READ|PROT_EXEC, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3, 0x4000) = 0x7e19f0283000
+20831 mmap(0x7e19f029e000, 16384, PROT_READ, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3, 0x1f000) = 0x7e19f029e000
+20831 mmap(0x7e19f02a2000, 8192, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3, 0x22000) = 0x7e19f02a2000
+20831 close(3)                          = 0
+20831 openat(AT_FDCWD, "/usr/lib/libc.so.6", O_RDONLY|O_CLOEXEC) = 3
+20831 read(3, "\177ELF\2\1\1\3\0\0\0\0\0\0\0\0\3\0>\0\1\0\0\0\220^\2\0\0\0\0\0"..., 832) = 832
+20831 pread64(3, "\6\0\0\0\4\0\0\0@\0\0\0\0\0\0\0@\0\0\0\0\0\0\0@\0\0\0\0\0\0\0"..., 784, 64) = 784
+20831 fstat(3, {st_mode=S_IFREG|0755, st_size=1948952, ...}) = 0
+20831 pread64(3, "\6\0\0\0\4\0\0\0@\0\0\0\0\0\0\0@\0\0\0\0\0\0\0@\0\0\0\0\0\0\0"..., 784, 64) = 784
+20831 mmap(NULL, 1973104, PROT_READ, MAP_PRIVATE|MAP_DENYWRITE, 3, 0) = 0x7e19efe1e000
+20831 mmap(0x7e19efe42000, 1421312, PROT_READ|PROT_EXEC, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3, 0x24000) = 0x7e19efe42000
+20831 mmap(0x7e19eff9d000, 348160, PROT_READ, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3, 0x17f000) = 0x7e19eff9d000
+20831 mmap(0x7e19efff2000, 24576, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3, 0x1d3000) = 0x7e19efff2000
+20831 mmap(0x7e19efff8000, 31600, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED|MAP_ANONYMOUS, -1, 0) = 0x7e19efff8000
+20831 close(3)                          = 0
+20831 mmap(NULL, 8192, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0x7e19f027d000
+20831 arch_prctl(ARCH_SET_FS, 0x7e19f027e500) = 0
+20831 set_tid_address(0x7e19f027e7d0)   = 20831
+20831 set_robust_list(0x7e19f027e7e0, 24) = 0
+20831 rseq(0x7e19f027ee20, 0x20, 0, 0x53053053) = 0
+20831 mprotect(0x7e19efff2000, 16384, PROT_READ) = 0
+20831 mprotect(0x7e19f02a2000, 4096, PROT_READ) = 0
+20831 mprotect(0x7e19f038e000, 4096, PROT_READ) = 0
+20831 mmap(NULL, 8192, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0x7e19f027b000
+20831 mprotect(0x7e19f0269000, 53248, PROT_READ) = 0
+20831 mprotect(0x634c9fa5a000, 4096, PROT_READ) = 0
+20831 mprotect(0x7e19f03e0000, 8192, PROT_READ) = 0
+20831 prlimit64(0, RLIMIT_STACK, NULL, {rlim_cur=8192*1024, rlim_max=RLIM64_INFINITY}) = 0
+20831 munmap(0x7e19f0392000, 110395)    = 0
+20831 futex(0x7e19f02776fc, FUTEX_WAKE_PRIVATE, 2147483647) = 0
+20831 getrandom("\xbb\xf6\xa9\x07\xa7\x6b\x11\x60", 8, GRND_NONBLOCK) = 8
+20831 brk(NULL)                         = 0x634c9ff3d000
+20831 brk(0x634c9ff5e000)               = 0x634c9ff5e000
+20831 openat(AT_FDCWD, "in", O_RDONLY)  = 3
+20831 dup3(3, 0, 0)                     = 0
+20831 close(3)                          = 0
+20831 fstat(1, {st_mode=S_IFCHR|0620, st_rdev=makedev(0x88, 0), ...}) = 0
+20831 write(1, "Enter file name: ", 17) = 17
+20831 fstat(0, {st_mode=S_IFREG|0644, st_size=31, ...}) = 0
+20831 read(0, "out\n1 5 3 5\n2 8 7\n1 \n0\n789 8 55", 4096) = 31
+20831 write(1, "Enter commands:\n", 16) = 16
+20831 openat(AT_FDCWD, "/dev/shm/my_shared_memory", O_RDWR|O_CREAT|O_NOFOLLOW|O_CLOEXEC, 0600) = 3
+20831 ftruncate(3, 88)                  = 0
+20831 mmap(NULL, 88, PROT_WRITE, MAP_SHARED, 3, 0) = 0x7e19f03ac000
+20831 clone(child_stack=NULL, flags=CLONE_CHILD_CLEARTID|CLONE_CHILD_SETTID|SIGCHLD, child_tidptr=0x7e19f027e7d0) = 20832
+20832 set_robust_list(0x7e19f027e7e0, 24) = 0
+20831 read(0, "", 4096)                 = 0
+20832 execve("lw3_child_proc", ["lw3_child_proc", "out"], 0x7ffdbfc96f88 /* 58 vars */ <unfinished ...>
+20831 futex(0x7e19f03ac038, FUTEX_WAIT_BITSET|FUTEX_CLOCK_REALTIME, 0, NULL, FUTEX_BITSET_MATCH_ANY <unfinished ...>
+20832 <... execve resumed>)             = 0
+20832 brk(NULL)                         = 0x6314a01dc000
+20832 access("/etc/ld.so.preload", R_OK) = -1 ENOENT (Нет такого файла или каталога)
+20832 openat(AT_FDCWD, "/etc/ld.so.cache", O_RDONLY|O_CLOEXEC) = 3
+20832 fstat(3, {st_mode=S_IFREG|0644, st_size=110395, ...}) = 0
+20832 mmap(NULL, 110395, PROT_READ, MAP_PRIVATE, 3, 0) = 0x7d2b5bb2e000
+20832 close(3)                          = 0
+20832 openat(AT_FDCWD, "/usr/lib/libstdc++.so.6", O_RDONLY|O_CLOEXEC) = 3
+20832 read(3, "\177ELF\2\1\1\3\0\0\0\0\0\0\0\0\3\0>\0\1\0\0\0\0\0\0\0\0\0\0\0"..., 832) = 832
+20832 fstat(3, {st_mode=S_IFREG|0755, st_size=21512744, ...}) = 0
+20832 mmap(NULL, 8192, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0x7d2b5bb2c000
+20832 mmap(NULL, 2597056, PROT_READ, MAP_PRIVATE|MAP_DENYWRITE, 3, 0) = 0x7d2b5b800000
+20832 mmap(0x7d2b5b89c000, 1273856, PROT_READ|PROT_EXEC, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3, 0x9c000) = 0x7d2b5b89c000
+20832 mmap(0x7d2b5b9d3000, 614400, PROT_READ, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3, 0x1d3000) = 0x7d2b5b9d3000
+20832 mmap(0x7d2b5ba69000, 57344, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3, 0x269000) = 0x7d2b5ba69000
+20832 mmap(0x7d2b5ba77000, 12480, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED|MAP_ANONYMOUS, -1, 0) = 0x7d2b5ba77000
+20832 close(3)                          = 0
+20832 openat(AT_FDCWD, "/usr/lib/libm.so.6", O_RDONLY|O_CLOEXEC) = 3
+20832 read(3, "\177ELF\2\1\1\3\0\0\0\0\0\0\0\0\3\0>\0\1\0\0\0\0\0\0\0\0\0\0\0"..., 832) = 832
+20832 fstat(3, {st_mode=S_IFREG|0755, st_size=960856, ...}) = 0
+20832 mmap(NULL, 962856, PROT_READ, MAP_PRIVATE|MAP_DENYWRITE, 3, 0) = 0x7d2b5b714000
+20832 mmap(0x7d2b5b722000, 524288, PROT_READ|PROT_EXEC, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3, 0xe000) = 0x7d2b5b722000
+20832 mmap(0x7d2b5b7a2000, 376832, PROT_READ, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3, 0x8e000) = 0x7d2b5b7a2000
+20832 mmap(0x7d2b5b7fe000, 8192, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3, 0xe9000) = 0x7d2b5b7fe000
+20832 close(3)                          = 0
+20832 openat(AT_FDCWD, "/usr/lib/libgcc_s.so.1", O_RDONLY|O_CLOEXEC) = 3
+20832 read(3, "\177ELF\2\1\1\0\0\0\0\0\0\0\0\0\3\0>\0\1\0\0\0\0\0\0\0\0\0\0\0"..., 832) = 832
+20832 fstat(3, {st_mode=S_IFREG|0644, st_size=728120, ...}) = 0
+20832 mmap(NULL, 147912, PROT_READ, MAP_PRIVATE|MAP_DENYWRITE, 3, 0) = 0x7d2b5bb07000
+20832 mmap(0x7d2b5bb0b000, 110592, PROT_READ|PROT_EXEC, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3, 0x4000) = 0x7d2b5bb0b000
+20832 mmap(0x7d2b5bb26000, 16384, PROT_READ, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3, 0x1f000) = 0x7d2b5bb26000
+20832 mmap(0x7d2b5bb2a000, 8192, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3, 0x22000) = 0x7d2b5bb2a000
+20832 close(3)                          = 0
+20832 openat(AT_FDCWD, "/usr/lib/libc.so.6", O_RDONLY|O_CLOEXEC) = 3
+20832 read(3, "\177ELF\2\1\1\3\0\0\0\0\0\0\0\0\3\0>\0\1\0\0\0\220^\2\0\0\0\0\0"..., 832) = 832
+20832 pread64(3, "\6\0\0\0\4\0\0\0@\0\0\0\0\0\0\0@\0\0\0\0\0\0\0@\0\0\0\0\0\0\0"..., 784, 64) = 784
+20832 fstat(3, {st_mode=S_IFREG|0755, st_size=1948952, ...}) = 0
+20832 pread64(3, "\6\0\0\0\4\0\0\0@\0\0\0\0\0\0\0@\0\0\0\0\0\0\0@\0\0\0\0\0\0\0"..., 784, 64) = 784
+20832 mmap(NULL, 1973104, PROT_READ, MAP_PRIVATE|MAP_DENYWRITE, 3, 0) = 0x7d2b5b532000
+20832 mmap(0x7d2b5b556000, 1421312, PROT_READ|PROT_EXEC, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3, 0x24000) = 0x7d2b5b556000
+20832 mmap(0x7d2b5b6b1000, 348160, PROT_READ, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3, 0x17f000) = 0x7d2b5b6b1000
+20832 mmap(0x7d2b5b706000, 24576, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3, 0x1d3000) = 0x7d2b5b706000
+20832 mmap(0x7d2b5b70c000, 31600, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED|MAP_ANONYMOUS, -1, 0) = 0x7d2b5b70c000
+20832 close(3)                          = 0
+20832 mmap(NULL, 8192, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0x7d2b5bb05000
+20832 arch_prctl(ARCH_SET_FS, 0x7d2b5bb06500) = 0
+20832 set_tid_address(0x7d2b5bb067d0)   = 20832
+20832 set_robust_list(0x7d2b5bb067e0, 24) = 0
+20832 rseq(0x7d2b5bb06e20, 0x20, 0, 0x53053053) = 0
+20832 mprotect(0x7d2b5b706000, 16384, PROT_READ) = 0
+20832 mprotect(0x7d2b5bb2a000, 4096, PROT_READ) = 0
+20832 mprotect(0x7d2b5b7fe000, 4096, PROT_READ) = 0
+20832 mmap(NULL, 8192, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0x7d2b5bb03000
+20832 mprotect(0x7d2b5ba69000, 53248, PROT_READ) = 0
+20832 mprotect(0x63149fcfa000, 4096, PROT_READ) = 0
+20832 mprotect(0x7d2b5bb7c000, 8192, PROT_READ) = 0
+20832 prlimit64(0, RLIMIT_STACK, NULL, {rlim_cur=8192*1024, rlim_max=RLIM64_INFINITY}) = 0
+20832 munmap(0x7d2b5bb2e000, 110395)    = 0
+20832 futex(0x7d2b5ba776fc, FUTEX_WAKE_PRIVATE, 2147483647) = 0
+20832 getrandom("\xfb\xd0\x53\xa6\xff\x37\x5a\x7c", 8, GRND_NONBLOCK) = 8
+20832 brk(NULL)                         = 0x6314a01dc000
+20832 brk(0x6314a01fd000)               = 0x6314a01fd000
+20832 openat(AT_FDCWD, "out", O_WRONLY|O_CREAT|O_TRUNC, 0666) = 3
+20832 dup3(3, 1, 0)                     = 1
+20832 close(3)                          = 0
+20832 openat(AT_FDCWD, "/dev/shm/my_shared_memory", O_RDWR|O_NOFOLLOW|O_CLOEXEC) = 3
+20832 mmap(NULL, 88, PROT_READ|PROT_WRITE, MAP_SHARED, 3, 0) = 0x7d2b5bb48000
+20832 futex(0x7d2b5bb48038, FUTEX_WAKE, 1) = 1
+20831 <... futex resumed>)              = 0
+20832 futex(0x7d2b5bb48018, FUTEX_WAIT_BITSET|FUTEX_CLOCK_REALTIME, 0, NULL, FUTEX_BITSET_MATCH_ANY <unfinished ...>
+20831 futex(0x7e19f03ac018, FUTEX_WAKE, 1 <unfinished ...>
+20832 <... futex resumed>)              = -1 EAGAIN (Ресурс временно недоступен)
+20831 <... futex resumed>)              = 0
+20831 wait4(-1,  <unfinished ...>
+20832 fstat(1, {st_mode=S_IFREG|0644, st_size=0, ...}) = 0
+20832 write(1, "14\n", 3)               = 3
+20832 write(1, "17\n", 3)               = 3
+20832 write(1, "1\n", 2)                = 2
+20832 write(1, "852\n", 4)              = 4
+20832 munmap(0x7d2b5bb48000, 88)        = 0
+20832 unlink("/dev/shm/my_shared_memory") = 0
+20832 close(1)                          = 0
+20832 exit_group(0)                     = ?
+20832 +++ exited with 0 +++
+20831 <... wait4 resumed>NULL, 0, NULL) = 20832
+20831 --- SIGCHLD {si_signo=SIGCHLD, si_code=CLD_EXITED, si_pid=20832, si_uid=1000, si_status=0, si_utime=0, si_stime=0} ---
+20831 munmap(0x7e19f03ac000, 88)        = 0
+20831 unlink("/dev/shm/my_shared_memory") = -1 ENOENT (Нет такого файла или каталога)
+20831 exit_group(0)                     = ?
+20831 +++ exited with 0 +++

@@ -1,0 +1,91 @@
+20407 execve("./dlinking", ["./dlinking"], 0x7ffd04c783f0 /* 58 vars */) = 0
+20407 brk(NULL)                         = 0x562f26363000
+20407 mmap(NULL, 8192, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0x799733096000
+20407 access("/etc/ld.so.preload", R_OK) = -1 ENOENT (Нет такого файла или каталога)
+20407 openat(AT_FDCWD, "/home/kirill/cpp-project/OS/build/lw4/glibc-hwcaps/x86-64-v3/libimpl2.so", O_RDONLY|O_CLOEXEC) = -1 ENOENT (Нет такого файла или каталога)
+20407 newfstatat(AT_FDCWD, "/home/kirill/cpp-project/OS/build/lw4/glibc-hwcaps/x86-64-v3/", 0x7ffec6e9bea0, 0) = -1 ENOENT (Нет такого файла или каталога)
+20407 openat(AT_FDCWD, "/home/kirill/cpp-project/OS/build/lw4/glibc-hwcaps/x86-64-v2/libimpl2.so", O_RDONLY|O_CLOEXEC) = -1 ENOENT (Нет такого файла или каталога)
+20407 newfstatat(AT_FDCWD, "/home/kirill/cpp-project/OS/build/lw4/glibc-hwcaps/x86-64-v2/", 0x7ffec6e9bea0, 0) = -1 ENOENT (Нет такого файла или каталога)
+20407 openat(AT_FDCWD, "/home/kirill/cpp-project/OS/build/lw4/libimpl2.so", O_RDONLY|O_CLOEXEC) = 3
+20407 read(3, "\177ELF\2\1\1\0\0\0\0\0\0\0\0\0\3\0>\0\1\0\0\0\0\0\0\0\0\0\0\0"..., 832) = 832
+20407 fstat(3, {st_mode=S_IFREG|0755, st_size=35080, ...}) = 0
+20407 mmap(NULL, 16480, PROT_READ, MAP_PRIVATE|MAP_DENYWRITE, 3, 0) = 0x799733091000
+20407 mmap(0x799733092000, 4096, PROT_READ|PROT_EXEC, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3, 0x1000) = 0x799733092000
+20407 mmap(0x799733093000, 4096, PROT_READ, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3, 0x2000) = 0x799733093000
+20407 mmap(0x799733094000, 8192, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3, 0x2000) = 0x799733094000
+20407 close(3)                          = 0
+20407 openat(AT_FDCWD, "/home/kirill/cpp-project/OS/build/lw4/libstdc++.so.6", O_RDONLY|O_CLOEXEC) = -1 ENOENT (Нет такого файла или каталога)
+20407 openat(AT_FDCWD, "/etc/ld.so.cache", O_RDONLY|O_CLOEXEC) = 3
+20407 fstat(3, {st_mode=S_IFREG|0644, st_size=110395, ...}) = 0
+20407 mmap(NULL, 110395, PROT_READ, MAP_PRIVATE, 3, 0) = 0x799733076000
+20407 close(3)                          = 0
+20407 openat(AT_FDCWD, "/usr/lib/libstdc++.so.6", O_RDONLY|O_CLOEXEC) = 3
+20407 read(3, "\177ELF\2\1\1\3\0\0\0\0\0\0\0\0\3\0>\0\1\0\0\0\0\0\0\0\0\0\0\0"..., 832) = 832
+20407 fstat(3, {st_mode=S_IFREG|0755, st_size=21512744, ...}) = 0
+20407 mmap(NULL, 2597056, PROT_READ, MAP_PRIVATE|MAP_DENYWRITE, 3, 0) = 0x799732c00000
+20407 mmap(0x799732c9c000, 1273856, PROT_READ|PROT_EXEC, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3, 0x9c000) = 0x799732c9c000
+20407 mmap(0x799732dd3000, 614400, PROT_READ, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3, 0x1d3000) = 0x799732dd3000
+20407 mmap(0x799732e69000, 57344, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3, 0x269000) = 0x799732e69000
+20407 mmap(0x799732e77000, 12480, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED|MAP_ANONYMOUS, -1, 0) = 0x799732e77000
+20407 close(3)                          = 0
+20407 openat(AT_FDCWD, "/home/kirill/cpp-project/OS/build/lw4/libm.so.6", O_RDONLY|O_CLOEXEC) = -1 ENOENT (Нет такого файла или каталога)
+20407 openat(AT_FDCWD, "/usr/lib/libm.so.6", O_RDONLY|O_CLOEXEC) = 3
+20407 read(3, "\177ELF\2\1\1\3\0\0\0\0\0\0\0\0\3\0>\0\1\0\0\0\0\0\0\0\0\0\0\0"..., 832) = 832
+20407 fstat(3, {st_mode=S_IFREG|0755, st_size=960856, ...}) = 0
+20407 mmap(NULL, 962856, PROT_READ, MAP_PRIVATE|MAP_DENYWRITE, 3, 0) = 0x799732f8a000
+20407 mmap(0x799732f98000, 524288, PROT_READ|PROT_EXEC, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3, 0xe000) = 0x799732f98000
+20407 mmap(0x799733018000, 376832, PROT_READ, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3, 0x8e000) = 0x799733018000
+20407 mmap(0x799733074000, 8192, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3, 0xe9000) = 0x799733074000
+20407 close(3)                          = 0
+20407 openat(AT_FDCWD, "/home/kirill/cpp-project/OS/build/lw4/libgcc_s.so.1", O_RDONLY|O_CLOEXEC) = -1 ENOENT (Нет такого файла или каталога)
+20407 openat(AT_FDCWD, "/usr/lib/libgcc_s.so.1", O_RDONLY|O_CLOEXEC) = 3
+20407 read(3, "\177ELF\2\1\1\0\0\0\0\0\0\0\0\0\3\0>\0\1\0\0\0\0\0\0\0\0\0\0\0"..., 832) = 832
+20407 fstat(3, {st_mode=S_IFREG|0644, st_size=728120, ...}) = 0
+20407 mmap(NULL, 147912, PROT_READ, MAP_PRIVATE|MAP_DENYWRITE, 3, 0) = 0x799732f65000
+20407 mmap(0x799732f69000, 110592, PROT_READ|PROT_EXEC, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3, 0x4000) = 0x799732f69000
+20407 mmap(0x799732f84000, 16384, PROT_READ, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3, 0x1f000) = 0x799732f84000
+20407 mmap(0x799732f88000, 8192, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3, 0x22000) = 0x799732f88000
+20407 close(3)                          = 0
+20407 openat(AT_FDCWD, "/home/kirill/cpp-project/OS/build/lw4/libc.so.6", O_RDONLY|O_CLOEXEC) = -1 ENOENT (Нет такого файла или каталога)
+20407 openat(AT_FDCWD, "/usr/lib/libc.so.6", O_RDONLY|O_CLOEXEC) = 3
+20407 read(3, "\177ELF\2\1\1\3\0\0\0\0\0\0\0\0\3\0>\0\1\0\0\0\220^\2\0\0\0\0\0"..., 832) = 832
+20407 pread64(3, "\6\0\0\0\4\0\0\0@\0\0\0\0\0\0\0@\0\0\0\0\0\0\0@\0\0\0\0\0\0\0"..., 784, 64) = 784
+20407 fstat(3, {st_mode=S_IFREG|0755, st_size=1948952, ...}) = 0
+20407 pread64(3, "\6\0\0\0\4\0\0\0@\0\0\0\0\0\0\0@\0\0\0\0\0\0\0@\0\0\0\0\0\0\0"..., 784, 64) = 784
+20407 mmap(NULL, 1973104, PROT_READ, MAP_PRIVATE|MAP_DENYWRITE, 3, 0) = 0x799732a1e000
+20407 mmap(0x799732a42000, 1421312, PROT_READ|PROT_EXEC, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3, 0x24000) = 0x799732a42000
+20407 mmap(0x799732b9d000, 348160, PROT_READ, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3, 0x17f000) = 0x799732b9d000
+20407 mmap(0x799732bf2000, 24576, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3, 0x1d3000) = 0x799732bf2000
+20407 mmap(0x799732bf8000, 31600, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED|MAP_ANONYMOUS, -1, 0) = 0x799732bf8000
+20407 close(3)                          = 0
+20407 mmap(NULL, 8192, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0x799732f63000
+20407 mmap(NULL, 12288, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0x799732f60000
+20407 arch_prctl(ARCH_SET_FS, 0x799732f60740) = 0
+20407 set_tid_address(0x799732f60a10)   = 20407
+20407 set_robust_list(0x799732f60a20, 24) = 0
+20407 rseq(0x799732f61060, 0x20, 0, 0x53053053) = 0
+20407 mprotect(0x799732bf2000, 16384, PROT_READ) = 0
+20407 mprotect(0x799732f88000, 4096, PROT_READ) = 0
+20407 mprotect(0x799733074000, 4096, PROT_READ) = 0
+20407 mprotect(0x799732e69000, 53248, PROT_READ) = 0
+20407 mprotect(0x799733094000, 4096, PROT_READ) = 0
+20407 mprotect(0x562f26185000, 4096, PROT_READ) = 0
+20407 mprotect(0x7997330cb000, 8192, PROT_READ) = 0
+20407 prlimit64(0, RLIMIT_STACK, NULL, {rlim_cur=8192*1024, rlim_max=RLIM64_INFINITY}) = 0
+20407 munmap(0x799733076000, 110395)    = 0
+20407 futex(0x799732e776fc, FUTEX_WAKE_PRIVATE, 2147483647) = 0
+20407 getrandom("\x50\xef\xf8\xfb\x3f\x01\x80\xea", 8, GRND_NONBLOCK) = 8
+20407 brk(NULL)                         = 0x562f26363000
+20407 brk(0x562f26384000)               = 0x562f26384000
+20407 openat(AT_FDCWD, "in", O_RDONLY)  = 3
+20407 dup3(3, 0, 0)                     = 0
+20407 close(3)                          = 0
+20407 fstat(0, {st_mode=S_IFREG|0644, st_size=30, ...}) = 0
+20407 read(0, "1 10\n2 10 10 9 8 7 6 5 4 3 2 1", 4096) = 30
+20407 fstat(1, {st_mode=S_IFCHR|0620, st_rdev=makedev(0x88, 0), ...}) = 0
+20407 write(1, "Impl 2\n", 7)           = 7
+20407 write(1, "2.71828\n", 8)          = 8
+20407 read(0, "", 4096)                 = 0
+20407 write(1, "1 2 3 4 5 6 7 8 9 10 \n", 22) = 22
+20407 exit_group(0)                     = ?
+20407 +++ exited with 0 +++

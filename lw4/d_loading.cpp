@@ -25,6 +25,7 @@ void load_lib(const char* file) {
 }
 
 int main() {
+    freopen("in_load", "r", stdin);
     load_lib("libimpl1.so");
 
     int current_impl{1};

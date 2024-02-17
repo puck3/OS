@@ -8,6 +8,8 @@
 using namespace std;
 
 int main() {
+    freopen("in", "r", stdin);
+
     int err;
     string file;
     cout << "Enter file name: ";
@@ -34,7 +36,7 @@ int main() {
     pid_t pid = fork();
     throw_if(pid, "fork failed");
     if (pid == 0) {
-        err = execl("child_proc", "child_proc", file.c_str(), NULL);
+        err = execl("lw3_child_proc", "lw3_child_proc", file.c_str(), NULL);
         throw_if(err, "Child file error");
     } else {
         string s, out = "";

@@ -49,7 +49,7 @@ void print(const vector<vector<double>>& matrix, int& size_x, int& size_y) {
 
 void input(arg_t args[], int argc, char* argv[], int& thread_count, int& size_x, int& size_y, int& filter_size_x, int& filter_size_y, int& div, int& k,
     vector<vector<double>>& matrix, vector<vector<double>>& result, vector<vector<double>>& filter) {
-    if (!freopen("in.txt", "r", stdin)) {
+    if (!freopen("./in", "r", stdin)) {
         throw runtime_error("File error");
     }
     // cout << "Enter matrix size: ";

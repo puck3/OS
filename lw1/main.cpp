@@ -10,6 +10,7 @@ void throw_if(int err, string what) {
 }
 
 int main() {
+    freopen("in", "r", stdin);
     string file;
     cout << "Enter file name: ";
     cin >> file;
@@ -28,7 +29,7 @@ int main() {
         throw_if(err, "Redirection error");
         close(pipe_fd[0]);
 
-        err = execl("child_proc", "child_proc", file.c_str(), NULL);
+        err = execl("lw1_child_proc", "lw1_child_proc", file.c_str(), NULL);
         throw_if(err, "Child file error");
     }
 

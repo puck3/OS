@@ -71,7 +71,7 @@ bool defense(Board& board, ServerSocket& socket) {
 
 
 void play(ServerSocket& socket) {
-    freopen("./in.txt", "r", stdin);
+    // freopen("in", "r", stdin);
     std::cout << "Start..." << std::endl;
     Board board;
     std::cout << "Set your ships:" << std::endl;

@@ -188,11 +188,12 @@ int main() {
             }
         } else if (operation == "exit" || operation == "q" || operation == "quit") {
             std::cout << "Exit..." << std::endl;
-            pthread_cancel(heartbeat_thread);
-            pthread_join(heartbeat_thread, nullptr);
             break;
         } else {
             std::cerr << "Incorrect operation" << std::endl;
         }
     }
+    set_heartbeat(5);
+    pthread_cancel(heartbeat_thread);
+    pthread_join(heartbeat_thread, nullptr);
 }
