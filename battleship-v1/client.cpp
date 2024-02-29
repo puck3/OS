@@ -29,6 +29,10 @@ bool attack(Board& board, ServerSocket& socket) {
               << std::endl;
     std::string pos;
     std::cin >> pos;
+    if (pos.size() != 2) {
+      std::cout << "Wrong answer! Try again." << std::endl;
+      continue;
+    }
     int y = static_cast<int>(toupper(pos[0]) - 'A'),
         x = static_cast<int>(pos[1] - '0');
     try {

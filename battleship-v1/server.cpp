@@ -138,7 +138,7 @@ int main() {
 
   while (std::chrono::duration_cast<std::chrono::seconds>(
              std::chrono::system_clock::now() - last_update) <
-         std::chrono::minutes{15}) {
+         std::chrono::seconds{1}) {
     length = read(fd, buffer, BUF_LEN);
     if (length < 0) {
       throw std::runtime_error("Read error");
